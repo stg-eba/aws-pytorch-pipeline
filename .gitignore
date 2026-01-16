@@ -1,0 +1,31 @@
+# .gitignore
+
+# Security (NEVER commit these)
+.env
+.aws/
+secrets.json
+
+# Python cache & temporary files
+__pycache__/
+*.pyc
+
+# Virtual Environments
+venv/
+env/
+.venv/
+
+# Data (Too large for GitHub)
+data/
+*.tar.gz
+*.pth
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+.env
+__pycache__/
+*.tar.gz
+*.pth
+downloaded_model/
+debug-output/
+profiler-output/
