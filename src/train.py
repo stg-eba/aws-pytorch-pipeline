@@ -15,7 +15,6 @@ def organize_data_for_torchvision(root_dir):
     """
     print(f"📂 Organizing data in {root_dir}...")
     
-    # Define the structure torchvision expects
     raw_dir = os.path.join(root_dir, 'MNIST', 'raw')
     os.makedirs(raw_dir, exist_ok=True)
     
@@ -36,7 +35,6 @@ def organize_data_for_torchvision(root_dir):
         elif os.path.exists(dst):
             print(f"   {f} is already in the right place.")
         else:
-            # It's okay if not all exist (sometimes we only upload train)
             pass
 
 # --- 1. Define the Neural Network ---
@@ -85,23 +83,19 @@ def main():
     parser.add_argument('--batch-size', type=int, default=64)
     parser.add_argument('--learning-rate', type=float, default=0.01)
     
-    # We ignore the --model-dir passed by SageMaker and use the hardcoded one below
     parser.add_argument('--model-dir', type=str, default='')
     parser.add_argument('--data-dir', type=str, default=os.environ.get('SM_CHANNEL_TRAINING', './data'))
     
     args = parser.parse_args()
 
-    # --- CRITICAL FIX: FORCE THE SAVE PATH ---
-    # SageMaker expects models to be here to upload them to S3 automatically
+
     target_model_dir = '/opt/ml/model'
     
-    # Fix Data Structure
     organize_data_for_torchvision(args.data_dir)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Transform & Load
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize((0.1307,), (0.3081,))
@@ -118,7 +112,7 @@ def main():
     train(model, device, train_loader, optimizer, args.epochs)
 
     # --- SAVE ---
-    # Ensure the directory exists
+
     os.makedirs(target_model_dir, exist_ok=True)
     
     save_path = os.path.join(target_model_dir, "model.pth")
